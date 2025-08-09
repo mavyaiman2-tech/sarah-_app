@@ -13,8 +13,18 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "express": "^5.1.0",
+<<<<<<< HEAD
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.0",
+=======
+    "file-type": "^21.0.0",
+    "google-auth-library": "^10.2.1",
+    "joi": "^18.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.0",
+    "multer": "^2.0.2",
+    "nanoid": "^5.1.5",
+>>>>>>> master
     "nodemailer": "^7.0.5"
   }
 }
