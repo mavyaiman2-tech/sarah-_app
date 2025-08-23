@@ -1,142 +1,96 @@
-<<<<<<< HEAD
 import mongoose from "mongoose";
 const { model, Schema } = mongoose;
+
 const schema = new Schema({
-    firstName:
-    {
+    firstName: {
         type: String,
         required: true,
         lowercase: true,
-        trim:true
+        trim: true
     },
     lastName: {
         type: String,
         required: true,
         lowercase: true,
-        trim:true
+        trim: true
     },
     email: {
         type: String,
-        required:function(){
-            if(this.phone){return false;}
-            return true;
+        required: function () {
+            return !this.phoneNumber;
         },
-       
-        trim:true
+        lowercase: true,
+        trim: true
     },
     password: {
         type: String,
-        required: true 
-    },
-    phoneNumber:{
-        type:String,
-        required:function(){
-            if(this.email){return false;}
-            return true;
-        },
-        trim:true
-    },
-    dob:{
-        type:Date,
-       
-    },
-    otp:{
-        type:Number,
-    },
-    otpExpiry:{
-        type:Date,
-    },
-    
-}
-,{timestamps:true , toObject:{virtuals:true},toJSON:{virtuals:true}});
-
-schema.virtual ("fullName").get(function(){
-    return `${this.firstName} ${this.lastName}`;
-})
-
-schema.virtual("fullName").set(function (value) {
-    const parts = value.split(" ");
-    this.firstName = parts[0];
-    this.lastName = parts[1] || "";
-  });
- schema.virtual("age").get(function(){
-    return new Date().getFullYear() - this.dob.getFullYear();
-})
-
- const User =model("User",schema);
-export default User;
-=======
-import mongoose from "mongoose";
-const { model, Schema } = mongoose;
-const schema = new Schema({
-    firstName:
-    {
-        type: String,
-        required: true,
-        lowercase: true,
-        trim:true
-    },
-    lastName: {
-        type: String,
-        required: true,
-        lowercase: true,
-        trim:true
-    },
-    email: {
-        type: String,
-        required:function(){
-            if(this.phone){return false;}
-            return true;
-        },
-       
-        trim:true
-    },
-    password: {
-        type: String,
-        required: function(){
-            if(this.userAgent==="google"){return false;}
-            return true;
+        required: function () {
+            return this.userAgent !== "google";
         }
     },
-    phoneNumber:{
-        type:String,
-        required:function(){
-            if(this.email){return false;}
-            return true;
+    phoneNumber: {
+        type: String,
+        required: function () {
+            return !this.email;
         },
-        trim:true
+        trim: true
     },
-    dob:{
-        type:Date,
-       
+    dob: {
+        type: Date
     },
-    otp:{
-        type:Number,
+    otp: {
+        type: String
     },
-    otpExpiry:{
-        type:Date,
+    otpExpiry: {
+        type: Date
     },
-    userAgent:{
-        type:String,
-        enum:["local","google"],
-        default:"local"
-    }
-}
-,{timestamps:true , toObject:{virtuals:true},toJSON:{virtuals:true}});
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    userAgent: {
+        type: String,
+        enum: ["local", "google"],
+        default: "local"
+    },
+   
 
-schema.virtual ("fullName").get(function(){
-    return `${this.firstName} ${this.lastName}`;
+    profile:{
+        secure_url:String,  
+        public_id:String,
+    },  
+    credentialsUpdateAt:{
+        type:Date,
+        default:Date.now(),
+    },
+    deletedAt:{
+        type:Date,
+  
+    },
+   
+}, {
+    timestamps: true,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
+});
+schema.virtual("messages",{
+    ref:"Message",
+    localField:"_id",
+    foreignField:"receiver"
 })
 
+schema.virtual("fullName").get(function () {
+    return `${this.firstName} ${this.lastName}`;
+});
 schema.virtual("fullName").set(function (value) {
     const parts = value.split(" ");
     this.firstName = parts[0];
     this.lastName = parts[1] || "";
-  });
- schema.virtual("age").get(function(){
-    return new Date().getFullYear() - this.dob.getFullYear();
-})
+});
 
- const User =model("User",schema);
+schema.virtual("age").get(function () {
+    return new Date().getFullYear() - this.dob.getFullYear();
+});
+
+const User = model("User", schema);
 export default User;
->>>>>>> master

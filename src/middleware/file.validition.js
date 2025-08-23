@@ -1,22 +1,33 @@
 import { fileTypeFromBuffer } from "file-type";
 import fs from "fs";
 
-// Middleware to validate file type by magic number (file signatures)
 export const fileValidationMiddleware = async (req, res, next) => {
   try {
-    // get the file path
-    const filePath = req.file.path;
-    // read the file and return buffer
-    const buffer = fs.readFileSync(filePath);
-    // get the file type
-    const type = await fileTypeFromBuffer(buffer);
-    // validate
-    const allowedTypes = ["image/jpeg", "image/png"];
-    if (!type || !allowedTypes.includes(type.mime))
-      return next(new Error("Invalid file type"));
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
 
-    return next();
+    // جلب بيانات الملف
+    let buffer;
+    if (req.file.path) {
+      buffer = fs.readFileSync(req.file.path); // من disk storage
+    } else if (req.file.buffer) {
+      buffer = req.file.buffer; // من memory storage
+    } else {
+      return res.status(400).json({ message: "Invalid file data" });
+    }
+
+    // التحقق من نوع الملف
+    const type = await fileTypeFromBuffer(buffer);
+    const allowedTypes = ["image/jpeg", "image/png"];
+
+    if (!type || !allowedTypes.includes(type.mime)) {
+      return res.status(400).json({ message: "Invalid file type" });
+    }
+
+    next();
   } catch (error) {
-    return next(new Error("Internal server error"));
+    console.error("File validation error:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

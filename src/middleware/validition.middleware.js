@@ -29,9 +29,12 @@
 
 //     }
 // };
+import Joi from "joi";
 export const isValid = (schema) => {
     return (req, res, next) => {
-        const { error } = schema.validate(req.body, { abortEarly: false });
+        const { error } = schema.validate(
+            {...req.body,...req.file,...req.params,...req.query}, 
+            { abortEarly: false });
         if (error) {
             const errorMessage = error.details.map(detail => detail.message).join(", ");
             return next(new Error(errorMessage, { cause: 400 }));
@@ -39,3 +42,13 @@ export const isValid = (schema) => {
         next();
     };
 };
+export const generalFeilds={
+    email: Joi.string().email(),
+    password: Joi.string(),
+    fullName: Joi.string(),
+   phoneNumber: Joi.string().length(11),
+   objectId: Joi.string().length(24),
+   dob: Joi.date(),
+   otp: Joi.string().length(5),   
+   rePassword: Joi.string().valid(Joi.ref('newPassword')),   
+}
